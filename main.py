@@ -1,10 +1,14 @@
 import asyncio
 import datetime
+import random
 
+from faker import Faker
 from fastapi import FastAPI
 import uvicorn
 
 app = FastAPI()
+random.seed(42)
+fake = Faker(['ru_RU'])
 GROUPS = [
     {
         "id": 1,
@@ -84,6 +88,15 @@ DB = {
         },
     ]
 }
+DB['events'] = [
+    event | {
+        'teacherId': random.randrange(100),
+        'teacher': fake.name(),
+        'subjectId': random.randrange(1000),
+        'subject': fake.catch_phrase(),
+    }
+    for event in DB['events']
+]
 
 
 @app.get("/filial/{filialId}/groups")
@@ -106,6 +119,19 @@ async def get_group(filialId: int, groupId: int, date: datetime.date):
             event for event in DB['events']
             if (event['groupId'] == groupId or groupId == 0)
             and event['date'] == date
+        ]
+    }
+
+
+@app.get("/filial/{filialId}/groups/date/{date}")
+async def get_group(filialId: int, date: datetime.date):
+    await asyncio.sleep(1)
+    return {
+        'filialId': filialId,
+        'date': date,
+        'events': [
+            event for event in DB['events']
+            if event['date'] == date
         ]
     }
 
