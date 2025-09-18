@@ -123,7 +123,7 @@ async def get_group(filialId: int, groupId: int, date: datetime.date):
     }
 
 
-@app.get("/filial/{filialId}/groups/date/{date}")
+@app.get("/filial/{filialId}/events/date/{date}")
 async def get_group(filialId: int, date: datetime.date):
     await asyncio.sleep(1)
     return {
